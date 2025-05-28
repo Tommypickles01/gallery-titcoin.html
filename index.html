@@ -1,110 +1,63 @@
 <!-- Save this as index.html -->
 <script>
   const gallery = document.getElementById('gallery');
-  const modal = document.getElementById('imageModal');
-  const modalImg = document.getElementById('modalImage');
-  const modalVideo = document.getElementById('modalVideo');
-  const downloadBtn = document.getElementById('downloadBtn');
   const bgMusic = document.getElementById('bgMusic');
-  let images = [], currentIndex = 0;
 
-  // Catbox videos with placeholders
   const externalVideos = [
-    {
-      url: "https://files.catbox.moe/wluvpx.mp4",
-      thumbnail: "https://placehold.co/250x200?text=Catbox+Video"
-    }
+    { url: "https://x.com/CultyMc/status/1907029047881642250", thumbnail: "thumbs/1907029047881642250.jpg" },
+    { url: "https://x.com/CultyMc/status/1904578616437911963", thumbnail: "thumbs/1904578616437911963.jpg" },
+    { url: "https://x.com/CultyMc/status/1905273095214018679", thumbnail: "thumbs/1905273095214018679.jpg" },
+    { url: "https://x.com/CultyMc/status/1907395072338837887", thumbnail: "thumbs/1907395072338837887.jpg" },
+    { url: "https://x.com/CultyMc/status/1908147879077679287", thumbnail: "thumbs/1908147879077679287.jpg" },
+    { url: "https://x.com/CultyMc/status/1905950597192331334", thumbnail: "thumbs/1905950597192331334.jpg" },
+    { url: "https://x.com/CultyMc/status/1907748618779410620", thumbnail: "thumbs/1907748618779410620.jpg" },
+    { url: "https://x.com/CultyMc/status/1904150814567879095", thumbnail: "thumbs/1904150814567879095.jpg" },
+    { url: "https://x.com/CultyMc/status/1909533883852292474", thumbnail: "thumbs/1909533883852292474.jpg" },
+    { url: "https://x.com/CultyMc/status/1905604164907868166", thumbnail: "thumbs/1905604164907868166.jpg" },
+    { url: "https://x.com/CultyMc/status/1905278391076397097", thumbnail: "thumbs/1905278391076397097.jpg" },
+    { url: "https://x.com/CultyMc/status/1900153518817694050", thumbnail: "thumbs/1900153518817694050.jpg" },
+    { url: "https://x.com/CultyMc/status/1900231918668398851", thumbnail: "thumbs/1900231918668398851.jpg" },
+    { url: "https://x.com/CultyMc/status/1899522658598805698", thumbnail: "thumbs/1899522658598805698.jpg" },
+    { url: "https://x.com/CultyMc/status/1901437319606878535", thumbnail: "thumbs/1901437319606878535.jpg" },
+    { url: "https://x.com/CultyMc/status/1901600049072587036", thumbnail: "thumbs/1901600049072587036.jpg" },
+    { url: "https://x.com/CultyMc/status/1901604283566411981", thumbnail: "thumbs/1901604283566411981.jpg" },
+    { url: "https://x.com/CultyMc/status/1901728537398178279", thumbnail: "thumbs/1901728537398178279.jpg" },
+    { url: "https://x.com/CultyMc/status/1901772638571147520", thumbnail: "thumbs/1901772638571147520.jpg" },
+    { url: "https://x.com/CultyMc/status/1901976237930635746", thumbnail: "thumbs/1901976237930635746.jpg" },
+    { url: "https://x.com/CultyMc/status/1901983903658729941", thumbnail: "thumbs/1901983903658729941.jpg" },
+    { url: "https://x.com/CultyMc/status/1902002473121841389", thumbnail: "thumbs/1902002473121841389.jpg" },
+    { url: "https://x.com/CultyMc/status/1902039977426379191", thumbnail: "thumbs/1902039977426379191.jpg" },
+    { url: "https://x.com/CultyMc/status/1902350428748042255", thumbnail: "thumbs/1902350428748042255.jpg" },
+    { url: "https://x.com/CultyMc/status/1902399796272386163", thumbnail: "thumbs/1902399796272386163.jpg" },
+    { url: "https://x.com/CultyMc/status/1902765255601655935", thumbnail: "thumbs/1902765255601655935.jpg" },
+    { url: "https://x.com/CultyMc/status/1903466387097493955", thumbnail: "thumbs/1903466387097493955.jpg" },
+    { url: "https://x.com/CultyMc/status/1903523327584407756", thumbnail: "thumbs/1903523327584407756.jpg" },
+    { url: "https://x.com/CultyMc/status/1904483240112455723", thumbnail: "thumbs/1904483240112455723.jpg" },
+    { url: "https://x.com/CultyMc/status/1904492851431440452", thumbnail: "thumbs/1904492851431440452.jpg" },
+    { url: "https://x.com/CultyMc/status/1905235051517808797", thumbnail: "thumbs/1905235051517808797.jpg" },
+    { url: "https://x.com/CultyMc/status/1905380017493676174", thumbnail: "thumbs/1905380017493676174.jpg" },
+    { url: "https://x.com/CultyMc/status/1909019950955581708", thumbnail: "thumbs/1909019950955581708.jpg" },
+    { url: "https://x.com/CultyMc/status/1920457605119352995", thumbnail: "thumbs/1920457605119352995.jpg" }
   ];
 
-  externalVideos.forEach((video, i) => {
-    const wrapper = document.createElement('a');
-    wrapper.href = video.url;
-    wrapper.target = "_blank";
-    wrapper.style.display = 'block';
+  externalVideos.forEach(video => {
+    const link = document.createElement('a');
+    link.href = video.url;
+    link.target = '_blank';
 
     const img = document.createElement('img');
     img.src = video.thumbnail;
-    img.alt = "Video Thumbnail";
+    img.alt = 'Video Thumbnail';
     img.style.width = '100%';
     img.style.height = '200px';
     img.style.objectFit = 'cover';
     img.style.borderRadius = '12px';
     img.style.transition = 'all 0.4s ease';
     img.style.boxShadow = '0 0 12px rgba(255,255,255,0.1)';
-    img.onmouseover = () => img.style.transform = 'scale(1.05)';
-    img.onmouseout = () => img.style.transform = 'scale(1)';
 
-    wrapper.appendChild(img);
-    gallery.appendChild(wrapper);
+    link.appendChild(img);
+    gallery.appendChild(link);
   });
 
-  // Existing modal logic remains (for images if added later)
-  function openModal(src, isVideo) {
-    modal.style.display = 'flex';
-    setTimeout(() => modal.classList.add('show'), 10);
-    if (isVideo) {
-      modalImg.style.display = 'none';
-      modalVideo.style.display = 'block';
-      modalVideo.src = src;
-      modalVideo.play();
-      downloadBtn.href = src;
-    } else {
-      modalImg.style.display = 'block';
-      modalImg.src = src;
-      modalVideo.style.display = 'none';
-      modalVideo.pause();
-      downloadBtn.href = src;
-    }
-  }
-
-  function closeModal() {
-    modal.classList.remove('show');
-    setTimeout(() => {
-      modal.style.display = 'none';
-      modalImg.src = '';
-      modalVideo.pause();
-      modalVideo.src = '';
-    }, 300);
-  }
-
-  function navigateModal(direction) {
-    currentIndex = (currentIndex + direction + images.length) % images.length;
-    const element = images[currentIndex];
-    const isVideo = element.tagName.toLowerCase() === 'video';
-    openModal(element.src, isVideo);
-  }
-
-  const canvas = document.getElementById('particles');
-  const ctx = canvas.getContext('2d');
-  let w, h, particles = [];
-  function resizeCanvas() {
-    w = canvas.width = window.innerWidth;
-    h = canvas.height = window.innerHeight;
-  }
-  function createParticles() {
-    particles = Array.from({length: 80}, () => ({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      r: Math.random() * 2 + 1,
-      dx: (Math.random() - 0.5) * 0.5,
-      dy: (Math.random() - 0.5) * 0.5
-    }));
-  }
-  function drawParticles() {
-    ctx.clearRect(0, 0, w, h);
-    ctx.fillStyle = '#0ff';
-    particles.forEach(p => {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fill();
-      p.x += p.dx;
-      p.y += p.dy;
-      if (p.x < 0 || p.x > w) p.dx *= -1;
-      if (p.y < 0 || p.y > h) p.dy *= -1;
-    });
-    requestAnimationFrame(drawParticles);
-  }
-  window.addEventListener('resize', () => { resizeCanvas(); createParticles(); });
   window.addEventListener('click', () => { if (bgMusic.paused) bgMusic.play().catch(() => {}); }, { once: true });
-  resizeCanvas(); createParticles(); drawParticles();
 </script>
