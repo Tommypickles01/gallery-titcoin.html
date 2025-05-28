@@ -7,35 +7,15 @@
   const bgMusic = document.getElementById('bgMusic');
   let images = [], currentIndex = 0;
 
-  // Catbox video links
+  // Catbox video links (using iframes)
   const externalVideos = [
     "https://files.catbox.moe/wluvpx.mp4"
-    // Add more Catbox links here if needed
   ];
 
   externalVideos.forEach((url, i) => {
-    const vid = document.createElement('video');
-    vid.src = url;
-    vid.muted = true;
-    vid.loop = true;
-    vid.autoplay = true;
-    vid.playsInline = true;
-    vid.style.opacity = '0';
-    vid.style.height = '200px';
-    vid.style.borderRadius = '12px';
-    vid.style.cursor = 'pointer';
-    vid.style.objectFit = 'cover';
-    vid.style.transition = 'all 0.4s ease';
-    vid.style.boxShadow = '0 0 12px rgba(255, 255, 255, 0.1)';
-    vid.onloadeddata = () => {
-      vid.style.opacity = '1';
-      vid.style.transform = 'translateY(0)';
-    };
-    vid.onclick = () => {
-      currentIndex = gallery.children.length;
-      openModal(url, true);
-    };
-    gallery.appendChild(vid);
+    const iframeWrapper = document.createElement('div');
+    iframeWrapper.innerHTML = `<iframe src="${url}" width="100%" height="200" frameborder="0" allowfullscreen style="border-radius:12px; box-shadow: 0 0 12px rgba(255,255,255,0.1); margin-bottom:20px;"></iframe>`;
+    gallery.appendChild(iframeWrapper);
   });
 
   function openModal(src, isVideo) {
