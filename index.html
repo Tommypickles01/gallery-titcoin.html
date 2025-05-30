@@ -1,63 +1,93 @@
 <!-- Save this as index.html -->
-<script>
-  const gallery = document.getElementById('gallery');
-  const bgMusic = document.getElementById('bgMusic');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PFP Editor</title>
+  <style>
+    body { font-family: sans-serif; background: #121212; color: #fff; text-align: center; }
+    canvas { border: 1px solid #555; margin-top: 10px; }
+    input { margin: 5px; }
+    #controls { margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>PFP Editor</h1>
+  <input type="file" id="baseUpload" accept="image/*" />
+  <input type="file" id="overlayUpload" accept="image/*" />
+  <div id="controls">
+    <button id="download">Download Final PFP</button>
+  </div>
+  <canvas id="canvas" width="512" height="512"></canvas>
 
-  const externalVideos = [
-    { url: "https://x.com/CultyMc/status/1907029047881642250", thumbnail: "thumbs/1907029047881642250.jpg" },
-    { url: "https://x.com/CultyMc/status/1904578616437911963", thumbnail: "thumbs/1904578616437911963.jpg" },
-    { url: "https://x.com/CultyMc/status/1905273095214018679", thumbnail: "thumbs/1905273095214018679.jpg" },
-    { url: "https://x.com/CultyMc/status/1907395072338837887", thumbnail: "thumbs/1907395072338837887.jpg" },
-    { url: "https://x.com/CultyMc/status/1908147879077679287", thumbnail: "thumbs/1908147879077679287.jpg" },
-    { url: "https://x.com/CultyMc/status/1905950597192331334", thumbnail: "thumbs/1905950597192331334.jpg" },
-    { url: "https://x.com/CultyMc/status/1907748618779410620", thumbnail: "thumbs/1907748618779410620.jpg" },
-    { url: "https://x.com/CultyMc/status/1904150814567879095", thumbnail: "thumbs/1904150814567879095.jpg" },
-    { url: "https://x.com/CultyMc/status/1909533883852292474", thumbnail: "thumbs/1909533883852292474.jpg" },
-    { url: "https://x.com/CultyMc/status/1905604164907868166", thumbnail: "thumbs/1905604164907868166.jpg" },
-    { url: "https://x.com/CultyMc/status/1905278391076397097", thumbnail: "thumbs/1905278391076397097.jpg" },
-    { url: "https://x.com/CultyMc/status/1900153518817694050", thumbnail: "thumbs/1900153518817694050.jpg" },
-    { url: "https://x.com/CultyMc/status/1900231918668398851", thumbnail: "thumbs/1900231918668398851.jpg" },
-    { url: "https://x.com/CultyMc/status/1899522658598805698", thumbnail: "thumbs/1899522658598805698.jpg" },
-    { url: "https://x.com/CultyMc/status/1901437319606878535", thumbnail: "thumbs/1901437319606878535.jpg" },
-    { url: "https://x.com/CultyMc/status/1901600049072587036", thumbnail: "thumbs/1901600049072587036.jpg" },
-    { url: "https://x.com/CultyMc/status/1901604283566411981", thumbnail: "thumbs/1901604283566411981.jpg" },
-    { url: "https://x.com/CultyMc/status/1901728537398178279", thumbnail: "thumbs/1901728537398178279.jpg" },
-    { url: "https://x.com/CultyMc/status/1901772638571147520", thumbnail: "thumbs/1901772638571147520.jpg" },
-    { url: "https://x.com/CultyMc/status/1901976237930635746", thumbnail: "thumbs/1901976237930635746.jpg" },
-    { url: "https://x.com/CultyMc/status/1901983903658729941", thumbnail: "thumbs/1901983903658729941.jpg" },
-    { url: "https://x.com/CultyMc/status/1902002473121841389", thumbnail: "thumbs/1902002473121841389.jpg" },
-    { url: "https://x.com/CultyMc/status/1902039977426379191", thumbnail: "thumbs/1902039977426379191.jpg" },
-    { url: "https://x.com/CultyMc/status/1902350428748042255", thumbnail: "thumbs/1902350428748042255.jpg" },
-    { url: "https://x.com/CultyMc/status/1902399796272386163", thumbnail: "thumbs/1902399796272386163.jpg" },
-    { url: "https://x.com/CultyMc/status/1902765255601655935", thumbnail: "thumbs/1902765255601655935.jpg" },
-    { url: "https://x.com/CultyMc/status/1903466387097493955", thumbnail: "thumbs/1903466387097493955.jpg" },
-    { url: "https://x.com/CultyMc/status/1903523327584407756", thumbnail: "thumbs/1903523327584407756.jpg" },
-    { url: "https://x.com/CultyMc/status/1904483240112455723", thumbnail: "thumbs/1904483240112455723.jpg" },
-    { url: "https://x.com/CultyMc/status/1904492851431440452", thumbnail: "thumbs/1904492851431440452.jpg" },
-    { url: "https://x.com/CultyMc/status/1905235051517808797", thumbnail: "thumbs/1905235051517808797.jpg" },
-    { url: "https://x.com/CultyMc/status/1905380017493676174", thumbnail: "thumbs/1905380017493676174.jpg" },
-    { url: "https://x.com/CultyMc/status/1909019950955581708", thumbnail: "thumbs/1909019950955581708.jpg" },
-    { url: "https://x.com/CultyMc/status/1920457605119352995", thumbnail: "thumbs/1920457605119352995.jpg" }
-  ];
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let baseImage = new Image();
+    let overlayImage = new Image();
+    let overlayX = 100, overlayY = 100, overlayScale = 1;
 
-  externalVideos.forEach(video => {
-    const link = document.createElement('a');
-    link.href = video.url;
-    link.target = '_blank';
+    // Load base image
+    document.getElementById('baseUpload').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        baseImage.src = URL.createObjectURL(file);
+        baseImage.onload = () => draw();
+      }
+    });
 
-    const img = document.createElement('img');
-    img.src = video.thumbnail;
-    img.alt = 'Video Thumbnail';
-    img.style.width = '100%';
-    img.style.height = '200px';
-    img.style.objectFit = 'cover';
-    img.style.borderRadius = '12px';
-    img.style.transition = 'all 0.4s ease';
-    img.style.boxShadow = '0 0 12px rgba(255,255,255,0.1)';
+    // Load overlay image
+    document.getElementById('overlayUpload').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        overlayImage.src = URL.createObjectURL(file);
+        overlayImage.onload = () => draw();
+      }
+    });
 
-    link.appendChild(img);
-    gallery.appendChild(link);
-  });
+    // Canvas drag logic
+    let isDragging = false, startX, startY;
+    canvas.addEventListener('mousedown', (e) => {
+      startX = e.offsetX - overlayX;
+      startY = e.offsetY - overlayY;
+      isDragging = true;
+    });
+    canvas.addEventListener('mousemove', (e) => {
+      if (isDragging) {
+        overlayX = e.offsetX - startX;
+        overlayY = e.offsetY - startY;
+        draw();
+      }
+    });
+    canvas.addEventListener('mouseup', () => isDragging = false);
 
-  window.addEventListener('click', () => { if (bgMusic.paused) bgMusic.play().catch(() => {}); }, { once: true });
-</script>
+    // Zoom overlay with mouse wheel
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      overlayScale += e.deltaY * -0.001;
+      overlayScale = Math.max(0.1, overlayScale);
+      draw();
+    });
+
+    // Draw function
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (baseImage.src) ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
+      if (overlayImage.src) {
+        const w = overlayImage.width * overlayScale;
+        const h = overlayImage.height * overlayScale;
+        ctx.drawImage(overlayImage, overlayX, overlayY, w, h);
+      }
+    }
+
+    // Download final image
+    document.getElementById('download').addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'pfp.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  </script>
+</body>
+</html>
