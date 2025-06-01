@@ -55,6 +55,7 @@
       margin-top: 20px;
       border-radius: 12px;
       box-shadow: 0 0 15px rgba(255, 153, 0, 0.5);
+      touch-action: none; /* Prevents default pinch-zoom on page */
     }
     button {
       background: #ff6600;
@@ -104,16 +105,39 @@
         top: 100,
         scaleX: 0.5,
         scaleY: 0.5,
-        cornerSize: 30,
+        cornerSize: 40,
         borderColor: '#ff9900',
         cornerColor: '#ff6600',
         cornerStyle: 'circle',
         transparentCorners: false,
-        rotatingPointOffset: 40
+        rotatingPointOffset: 50
       });
       glassesImage = img;
       canvas.add(img).setActiveObject(img);
     }, { crossOrigin: 'anonymous' });
+
+    // Enable touch gestures
+    canvas.on('touch:gesture', function(opt) {
+      const e = opt.e;
+      if (e.touches && e.touches.length === 2) {
+        const point = new fabric.Point(e.touches[0].clientX, e.touches[0].clientY);
+        const target = canvas.getActiveObject();
+        if (target) {
+          target.scale(target.scaleX * opt.self.scale);
+          target.rotate(target.angle + opt.self.rotation);
+          canvas.renderAll();
+        }
+      }
+    });
+
+    canvas.on('touch:drag', function(opt) {
+      const target = opt.target;
+      if (target) {
+        target.left = opt.e.clientX - canvas._offset.left;
+        target.top = opt.e.clientY - canvas._offset.top;
+        canvas.renderAll();
+      }
+    });
 
     const dropZone = document.getElementById('dropZone');
 
