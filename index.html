@@ -55,7 +55,7 @@
       margin-top: 20px;
       border-radius: 12px;
       box-shadow: 0 0 15px rgba(255, 153, 0, 0.5);
-      touch-action: none; /* Prevents default pinch-zoom on page */
+      touch-action: none; /* Prevents default pinch-zoom */
     }
     button {
       background: #ff6600;
@@ -87,15 +87,13 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
   <script>
-    const canvas = new fabric.Canvas('canvas', {
-      selection: false,
-      preserveObjectStacking: true
-    });
-    canvas.setWidth(window.innerWidth * 0.9);
-    canvas.setHeight(window.innerHeight * 0.5);
-
+    const canvas = new fabric.Canvas('canvas', { selection: false });
     let userImage = null;
     let glassesImage = null;
+    let initialDistance = 0;
+    let initialAngle = 0;
+    let initialScale = 1;
+    let initialRotation = 0;
 
     const glassesURL = 'https://res.cloudinary.com/dmwmvmg3o/image/upload/v1748746102/QgCTOu0j-Photoroom_lcskpl.png';
 
@@ -116,31 +114,7 @@
       canvas.add(img).setActiveObject(img);
     }, { crossOrigin: 'anonymous' });
 
-    // Enable touch gestures
-    canvas.on('touch:gesture', function(opt) {
-      const e = opt.e;
-      if (e.touches && e.touches.length === 2) {
-        const point = new fabric.Point(e.touches[0].clientX, e.touches[0].clientY);
-        const target = canvas.getActiveObject();
-        if (target) {
-          target.scale(target.scaleX * opt.self.scale);
-          target.rotate(target.angle + opt.self.rotation);
-          canvas.renderAll();
-        }
-      }
-    });
-
-    canvas.on('touch:drag', function(opt) {
-      const target = opt.target;
-      if (target) {
-        target.left = opt.e.clientX - canvas._offset.left;
-        target.top = opt.e.clientY - canvas._offset.top;
-        canvas.renderAll();
-      }
-    });
-
     const dropZone = document.getElementById('dropZone');
-
     dropZone.addEventListener('click', () => {
       const fileInput = document.createElement('input');
       fileInput.type = 'file';
@@ -186,6 +160,54 @@
         }, { crossOrigin: 'anonymous' });
       };
       reader.readAsDataURL(file);
+    }
+
+    // Touch events for pinch-to-zoom and rotate
+    const canvasElement = document.getElementById('canvas');
+    canvasElement.addEventListener('touchstart', function (e) {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        initialDistance = getDistance(touch1, touch2);
+        initialAngle = getAngle(touch1, touch2);
+        const active = canvas.getActiveObject();
+        if (active) {
+          initialScale = active.scaleX;
+          initialRotation = active.angle;
+        }
+      }
+    }, { passive: false });
+
+    canvasElement.addEventListener('touchmove', function (e) {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        const currentDistance = getDistance(touch1, touch2);
+        const currentAngle = getAngle(touch1, touch2);
+        const scaleFactor = currentDistance / initialDistance;
+        const rotationDelta = currentAngle - initialAngle;
+        const active = canvas.getActiveObject();
+        if (active) {
+          active.scale(initialScale * scaleFactor);
+          active.rotate(initialRotation + rotationDelta);
+          active.setCoords();
+          canvas.renderAll();
+        }
+      }
+    }, { passive: false });
+
+    function getDistance(touch1, touch2) {
+      const dx = touch2.clientX - touch1.clientX;
+      const dy = touch2.clientY - touch1.clientY;
+      return Math.hypot(dx, dy);
+    }
+
+    function getAngle(touch1, touch2) {
+      const dx = touch2.clientX - touch1.clientX;
+      const dy = touch2.clientY - touch1.clientY;
+      return (Math.atan2(dy, dx) * 180) / Math.PI;
     }
 
     document.getElementById('download').addEventListener('click', () => {
