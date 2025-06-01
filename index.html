@@ -80,10 +80,11 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
   <script>
     const canvas = new fabric.Canvas('canvas', { selection: false });
+    let userImage;
 
     const glassesURL = 'https://files.catbox.moe/8wty3c.png';
 
-    // Load glasses
+    // Load glasses with user-friendly controls
     let viperGlasses;
     fabric.Image.fromURL(glassesURL, img => {
       img.set({
@@ -104,7 +105,6 @@
 
     const dropZone = document.getElementById('dropZone');
 
-    // Handle file upload
     dropZone.addEventListener('click', () => {
       const fileInput = document.createElement('input');
       fileInput.type = 'file';
@@ -142,14 +142,18 @@
             selectable: false,
             evented: false
           });
-          canvas.insertAt(img, 0); // Add as base layer
+          if (userImage) {
+            canvas.remove(userImage);
+          }
+          userImage = img;
+          canvas.add(userImage);
+          userImage.sendToBack();
           canvas.renderAll();
         });
       };
       reader.readAsDataURL(file);
     }
 
-    // Download final image (with background)
     document.getElementById('download').addEventListener('click', () => {
       canvas.discardActiveObject();
       canvas.renderAll();
