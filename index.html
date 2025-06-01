@@ -80,12 +80,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
   <script>
     const canvas = new fabric.Canvas('canvas', { selection: false });
-    let userImage;
+    let userImage = null;
+    let glassesImage = null;
 
     const glassesURL = 'https://files.catbox.moe/8wty3c.png';
 
-    // Load glasses with user-friendly controls
-    let viperGlasses;
+    // Load glasses with CORS enabled
     fabric.Image.fromURL(glassesURL, img => {
       img.set({
         left: 100,
@@ -94,74 +94,4 @@
         scaleY: 0.5,
         cornerSize: 20,
         borderColor: '#ff9900',
-        cornerColor: '#ff6600',
-        cornerStyle: 'circle',
-        transparentCorners: false,
-        rotatingPointOffset: 30
-      });
-      canvas.add(img).setActiveObject(img);
-      viperGlasses = img;
-    });
-
-    const dropZone = document.getElementById('dropZone');
-
-    dropZone.addEventListener('click', () => {
-      const fileInput = document.createElement('input');
-      fileInput.type = 'file';
-      fileInput.accept = 'image/png';
-      fileInput.click();
-      fileInput.onchange = e => handleFile(e.target.files[0]);
-    });
-
-    dropZone.addEventListener('dragover', e => {
-      e.preventDefault();
-      dropZone.style.background = 'rgba(255, 153, 0, 0.2)';
-    });
-
-    dropZone.addEventListener('dragleave', e => {
-      e.preventDefault();
-      dropZone.style.background = '';
-    });
-
-    dropZone.addEventListener('drop', e => {
-      e.preventDefault();
-      dropZone.style.background = '';
-      const file = e.dataTransfer.files[0];
-      handleFile(file);
-    });
-
-    function handleFile(file) {
-      const reader = new FileReader();
-      reader.onload = f => {
-        fabric.Image.fromURL(f.target.result, img => {
-          img.set({
-            left: 0,
-            top: 0,
-            scaleX: canvas.width / img.width,
-            scaleY: canvas.height / img.height,
-            selectable: false,
-            evented: false
-          });
-          if (userImage) {
-            canvas.remove(userImage);
-          }
-          userImage = img;
-          canvas.add(userImage);
-          userImage.sendToBack();
-          canvas.renderAll();
-        });
-      };
-      reader.readAsDataURL(file);
-    }
-
-    document.getElementById('download').addEventListener('click', () => {
-      canvas.discardActiveObject();
-      canvas.renderAll();
-      const link = document.createElement('a');
-      link.download = 'tit-viper-overlay.png';
-      link.href = canvas.toDataURL({ format: 'png' });
-      link.click();
-    });
-  </script>
-</body>
-</html>
+        cornerCo
