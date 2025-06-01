@@ -79,14 +79,26 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
   <script>
-    const canvas = new fabric.Canvas('canvas');
-    const glassesURL = 'https://files.catbox.moe/su0uj7.png'; // Transparent glasses
+    const canvas = new fabric.Canvas('canvas', {
+      selection: false,
+    });
 
-    // Load glasses
-    let viperGlasses;
+    const glassesURL = 'https://files.catbox.moe/8wty3c.png'; // Updated glasses
+
+    // Load glasses with user-friendly controls
     fabric.Image.fromURL(glassesURL, img => {
-      img.set({ left: 100, top: 100, scaleX: 0.5, scaleY: 0.5, selectable: true });
-      viperGlasses = img;
+      img.set({
+        left: 100,
+        top: 100,
+        scaleX: 0.5,
+        scaleY: 0.5,
+        cornerSize: 20,
+        borderColor: '#ff9900',
+        cornerColor: '#ff6600',
+        cornerStyle: 'circle',
+        transparentCorners: false,
+        rotatingPointOffset: 30
+      });
       canvas.add(img).setActiveObject(img);
     });
 
@@ -123,14 +135,20 @@
       const reader = new FileReader();
       reader.onload = f => {
         fabric.Image.fromURL(f.target.result, img => {
-          img.set({ left: 0, top: 0, scaleX: canvas.width / img.width, scaleY: canvas.height / img.height, selectable: false });
+          img.set({
+            left: 0,
+            top: 0,
+            scaleX: canvas.width / img.width,
+            scaleY: canvas.height / img.height,
+            selectable: false
+          });
           canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
         });
       };
       reader.readAsDataURL(file);
     }
 
-    // Download
+    // Download final image
     document.getElementById('download').addEventListener('click', () => {
       const link = document.createElement('a');
       link.download = 'tit-viper-overlay.png';
